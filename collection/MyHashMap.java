@@ -69,7 +69,12 @@ public class MyHashMap<K, V> {
      */
     private int hash(Object key) {
         // 提示：HashMap 允许 null key，null 的 hash 约定为 0
-        throw new UnsupportedOperationException("TODO: 实现扰动函数");
+        if(key==null) return 0;
+        int h = key.hashCode();
+        return h^(h>>>16);
+//        throw new UnsupportedOperationException("TODO: 实现扰动函数");
+
+
     }
 
     /**
@@ -82,10 +87,32 @@ public class MyHashMap<K, V> {
      *      否则在链表【末尾】挂新节点（尾插法，JDK8 的做法）
      *   4. size++ 后检查是否超过 threshold，超过则调用 resize()
      *
-     * @return key 已存在时返回被覆盖的旧值，否则返回 null
+     * @return key 已存在时返回被覆盖的旧值，否则返回 null newnode.key.Key(key)
      */
     public V put(K key, V value) {
-        throw new UnsupportedOperationException("TODO: 实现 put");
+        int hash = hash(key);
+        int idx = (table.length-1)&hash;
+        if(table[idx]==null){
+            table[idx]=new Node<>(hash,key,value,null);
+        }else{
+            Node<K,V> newnode = table[idx];
+            Node<K,V> prev = null;
+            for(;newnode!=null;newnode=newnode.next){
+                if(keyEquals(newnode.key,key)){
+                    V oldValue =newnode.value;
+                    newnode.value=value;
+                    return oldValue;
+                }
+                prev = newnode;
+            }
+            prev.next= new Node<>(hash,key,value,null);
+        }
+        size++;
+        if(size>threshold){
+            resize();
+        }
+        return null;
+//        throw new UnsupportedOperationException("TODO: 实现 put");
     }
 
     /**
