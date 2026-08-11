@@ -123,7 +123,16 @@ public class MyHashMap<K, V> {
      * @return 找到返回 value，不存在返回 null
      */
     public V get(K key) {
-        throw new UnsupportedOperationException("TODO: 实现 get");
+        int hash = hash(key);
+        int idx = hash&(table.length-1);
+        Node<K,V> node = table[idx];
+        for(Node<K,V> cur=node; cur!=null;cur=cur.next){
+            if(cur.hash==hash && keyEquals(cur.key,key)){
+                return cur.value;
+            }
+        }
+        return null;
+//        throw new UnsupportedOperationException("TODO: 实现 get");
     }
 
     /**
