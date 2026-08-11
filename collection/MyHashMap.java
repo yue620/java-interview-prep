@@ -179,8 +179,27 @@ public class MyHashMap<K, V> {
      */
     @SuppressWarnings("unchecked")
     private void resize() {
-
-        throw new UnsupportedOperationException("TODO: 实现扩容");
+        int oldCap = table.length;
+        int newCap = oldCap*2;
+        threshold = (int) (newCap*LOAD_FACTOR);
+        Node<K, V>[]  newTable = (Node<K, V>[]) new Node[newCap];
+        for (int i=0; i < oldCap; i++) {
+            Node<K,V> node = table[i];
+            for (Node<K,V> cur=node; cur!=null; cur=cur.next) {
+                int newIdx = (newCap-1)&cur.hash;
+                if(newTable[newIdx]==null){
+                    newTable[newIdx]=new Node<>(cur.hash,cur.key,cur.value,null);
+                }else{
+                    Node<K,V> newNode = newTable[newIdx];
+                    while(newNode.next!=null){
+                        newNode=newNode.next;
+                    }
+                    newNode.next=new Node<>(cur.hash,cur.key,cur.value,null);
+                }
+            }
+        }
+        table = newTable;
+//        throw new UnsupportedOperationException("TODO: 实现扩容");
     }
 
     // ==================== 已帮你实现的部分 ====================
