@@ -186,7 +186,13 @@ public class MyHashMap<K, V> {
         for (int i=0; i < oldCap; i++) {
             Node<K,V> node = table[i];
             for (Node<K,V> cur=node; cur!=null; cur=cur.next) {
-                int newIdx = (newCap-1)&cur.hash;
+                int newIdx;
+                int flag = oldCap&cur.hash;
+                if(flag==0){
+                    newIdx=i;
+                }else{
+                    newIdx=oldCap+i;
+                }
                 if(newTable[newIdx]==null){
                     newTable[newIdx]=new Node<>(cur.hash,cur.key,cur.value,null);
                 }else{
