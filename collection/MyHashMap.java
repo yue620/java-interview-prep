@@ -151,11 +151,17 @@ public class MyHashMap<K, V> {
         for(Node<K,V> cur=node; cur!=null;cur=cur.next){
             if(cur.hash==hash && keyEquals(cur.key,key)){
                 V val = cur.value;
-                prev.next=cur.next;
+                if(prev==null){
+                    table[idx]=cur.next;
+                }else{
+                    prev.next=cur.next;
+                }
+                size--;
                 return val;
             }
             prev = cur;
         }
+        size--;
         return null;
 //        throw new UnsupportedOperationException("TODO: 实现 remove");
     }
@@ -173,6 +179,7 @@ public class MyHashMap<K, V> {
      */
     @SuppressWarnings("unchecked")
     private void resize() {
+
         throw new UnsupportedOperationException("TODO: 实现扩容");
     }
 
