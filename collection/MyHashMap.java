@@ -161,7 +161,7 @@ public class MyHashMap<K, V> {
             }
             prev = cur;
         }
-        size--;
+
         return null;
 //        throw new UnsupportedOperationException("TODO: 实现 remove");
     }
