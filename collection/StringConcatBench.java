@@ -18,15 +18,21 @@ public class StringConcatBench {
         System.out.println("StringBuffer  append  耗时：" + benchStringBuffer() + " ms");
 
         /*
-         * 【记录你的实测数据】：
-         *   String        ：______ ms
-         *   StringBuilder ：______ ms
-         *   StringBuffer  ：______ ms
+         * 【实测数据】（2026-08-13，10 万次拼接）：
+         *   String        ：2030 ms
+         *   StringBuilder ：2 ms
+         *   StringBuffer  ：2 ms
+         *   结论：String += 比 StringBuilder 慢约 1000 倍。
          *
          * 【思考题 1】String 方式为什么慢这么多？
-         *   提示：String 不可变 → 每次 += 发生了什么？第 i 次拼接要拷贝多少个字符？
+         *   String 不可变 → 每次 += 都要新建一个 String 对象，并把旧内容完整拷贝一遍。
+         *   第 i 次拼接要拷贝约 i 个字符，总拷贝量是 1+2+...+n ≈ n²/2（平方级），
+         *   还会产生 n 个临时对象给 GC 回收。所以又慢又费内存。
          *
-         * 【思考题 2】StringBuffer 比 StringBuilder 慢的那部分开销是什么？
+         * 【思考题 2】StringBuffer 理论上慢在哪？为什么我实测和 StringBuilder 一样快？
+         *   StringBuffer 的 append 等方法加了 synchronized，理论上多一层锁开销。
+         *   但现代 JVM 对无竞争的锁有优化（锁消除/轻量级锁），单线程测试下开销可忽略，
+         *   所以实测两者几乎相等。锁开销要在多线程竞争时才体现。
          */
     }
 
