@@ -15,7 +15,7 @@ public class FailFastDemo {
     public static void main(String[] args) {
         // 任务 1：先运行 reproduce()，亲眼看到异常抛出来
         // 把异常信息复制到 reproduce 方法的注释里留证后，再把这行注释掉
-        reproduce();
+//        reproduce();
 
         // 任务 2：三个修复方法，全部应正常打印删除后的结果
         System.out.println("迭代器修复：" + fixByIterator());      // 期望 [a, b, d, e]
@@ -36,11 +36,22 @@ public class FailFastDemo {
      * 运行后应该抛出 ConcurrentModificationException。
      *
      * 【在这里粘贴你实际看到的异常信息，作为"亲眼见过"的证据】：
+     * Exception in thread "main" java.util.ConcurrentModificationException
+     * 	at java.base/java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1096)
+     * 	at java.base/java.util.ArrayList$Itr.next(ArrayList.java:1050)
+     * 	at collection.FailFastDemo.reproduce(FailFastDemo.java:44)
+     * 	at collection.FailFastDemo.main(FailFastDemo.java:18)
      *
      * 思考题（用注释回答）：这个异常是迭代器的哪个方法在什么时候抛出的？
+     * next()方法在expectedModCount与 modCount不一致时抛出异常
      */
     private static void reproduce() {
         List<String> list = sampleList();
+        for(String l:list){
+            if(l.equals("c")){
+                list.remove(l);
+            }
+        }
         // TODO：增强 for 遍历 + remove
 
     }
@@ -59,6 +70,10 @@ public class FailFastDemo {
         List<String> list = sampleList();
         Iterator<String> it = list.iterator();
         // TODO：遍历 + 用 it 自己的方法删除 "c"
+        //可以怎么替换成for，解释一下iterator的各种方法
+        while(it.hasNext()){
+            if(it.next().equals("c")) it.remove();
+        }
 
         return list;
     }
@@ -71,6 +86,7 @@ public class FailFastDemo {
     private static List<String> fixByRemoveIf() {
         List<String> list = sampleList();
         // TODO：一行 lambda
+        list.removeIf(s -> s.equals("c"));
 
         return list;
     }
@@ -87,6 +103,11 @@ public class FailFastDemo {
     private static List<String> fixByIndex() {
         List<String> list = sampleList();
         // TODO：倒序 for-i + remove(index)
+        for (int i = list.size() - 1; i >= 0; i--) {   // 从最后一个开始，走到 0
+            if (list.get(i).equals("c")) {
+                list.remove(i);
+            }
+        }
 
         return list;
     }
