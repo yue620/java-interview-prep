@@ -38,6 +38,10 @@ public class StringConcatBench {
     private static long benchString() {
         long start = System.currentTimeMillis();
         // TODO：String s = ""; 循环 s += i;
+        String s = "";
+        for (int i = 0; i < TIMES; i++) {
+            s += i;
+        }
 
         return System.currentTimeMillis() - start;
     }
@@ -48,6 +52,10 @@ public class StringConcatBench {
     private static long benchStringBuilder() {
         long start = System.currentTimeMillis();
         // TODO
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TIMES; i++) {
+            sb.append(i);
+        }
 
         return System.currentTimeMillis() - start;
     }
@@ -58,6 +66,10 @@ public class StringConcatBench {
     private static long benchStringBuffer() {
         long start = System.currentTimeMillis();
         // TODO
+        StringBuffer sbf = new StringBuffer();
+        for (int i = 0; i < TIMES; i++) {
+            sbf.append(i);
+        }
 
         return System.currentTimeMillis() - start;
     }
