@@ -30,6 +30,27 @@ public class MyThreadPool {
      */
     public MyThreadPool(int workerCount) {
         // TODO
+        for (int i = 0; i < workerCount; i++) {
+            Runnable R = new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        Runnable task = null;
+                        try {
+                            task = queue.take();
+                            task.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            };
+            Thread t=new Thread(R,"worker-"+i);
+            t.start();
+
+        }
+
 
     }
 
@@ -42,6 +63,12 @@ public class MyThreadPool {
      */
     public void execute(Runnable task) {
         // TODO
+        try {
+            queue.put(task);
+        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+        }
 
     }
 

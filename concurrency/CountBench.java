@@ -11,12 +11,15 @@ import java.util.concurrent.atomic.LongAdder;
  * 对比 synchronized / AtomicInteger / LongAdder 的正确性与耗时
  *
  * 【实测数据】（跑完填这里）：
- *   synchronized  ：结果 ______，耗时 ______ ms
- *   AtomicInteger ：结果 ______，耗时 ______ ms
- *   LongAdder     ：结果 ______，耗时 ______ ms
+ *      synchronized   结果=2000000 耗时=44 ms
+ *      AtomicInteger  结果=2000000 耗时=24 ms
+ *      LongAdder      结果=2000000 耗时=22 ms
  *
  * 【思考题】为什么高竞争下 LongAdder 比 AtomicInteger 快？
- *
+ *   AtomicInteger 只有一个变量，所有线程 CAS 抢同一个值，竞争激烈时大量失败自旋。
+ *   LongAdder 内部是 base + Cell 数组：多个计数单元分散竞争，各改各的，最后 sum() 求和。
+ *   （实测两者接近的原因：8 线程竞争还不算极端，线程数越多 LongAdder 优势越明显；
+ *     且 synchronized 仅 44ms 也说明 8 线程下锁竞争尚轻，无竞争锁优化生效。）
  */
 public class CountBench {
 
@@ -66,7 +69,11 @@ public class CountBench {
     private static long benchSynchronized() throws InterruptedException {
         return runBench(() -> {
             // TODO：for 循环里 synchronized (CountBench.class) { syncCount++; }
-
+            for (int i = 0; i < TIMES_PER_THREAD; i++) {
+                synchronized(CountBench.class){
+                    syncCount++;
+                }
+            }
         });
     }
 
@@ -74,6 +81,10 @@ public class CountBench {
     private static long benchAtomic() throws InterruptedException {
         return runBench(() -> {
             // TODO
+            for (int i = 0; i < TIMES_PER_THREAD; i++) {
+                atomicCount.incrementAndGet();
+            }
+
 
         });
     }
@@ -82,7 +93,9 @@ public class CountBench {
     private static long benchLongAdder() throws InterruptedException {
         return runBench(() -> {
             // TODO
-
+            for (int i = 0; i < TIMES_PER_THREAD; i++) {
+                longAdder.increment();
+            }
         });
     }
 }
