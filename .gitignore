@@ -1,32 +1,3 @@
-# Java
-*.class
-*.jar
-*.war
-
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-
-# Gradle
-.gradle/
-build/
-
-# IDEA
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# Eclipse / VS Code
-.classpath
-.project
-.settings/
-.vscode/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDEA 编译输出
 out/
+target/
+*.class

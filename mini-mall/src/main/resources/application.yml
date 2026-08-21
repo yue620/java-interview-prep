@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # TODO(环境)：改成你本机 MySQL 的账号密码；先手动建库：CREATE DATABASE mini_mall DEFAULT CHARSET utf8mb4;
+    url: jdbc:mysql://localhost:3306/mini_mall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update        # 自动建表，方便练习；生产环境绝不用
+    show-sql: true            # 打印 SQL，观察缓存/索引实验时很有用
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    com.example.mall: debug
