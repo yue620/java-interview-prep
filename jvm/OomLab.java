@@ -28,7 +28,7 @@ public class OomLab {
             System.out.println("已分配 " + holder.size() + " MB");
             // 任务 2 提示：做 jmap 分析时，先取消下面这行注释拖慢速度，
             // 不然 20MB 几毫秒就满了，来不及 jmap
-            // Thread.sleep(500);
+             Thread.sleep(5000);
         }
     }
 }
