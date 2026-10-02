@@ -2,11 +2,13 @@ server:
   port: 8080
 
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     # TODO(环境)：改成你本机 MySQL 的账号密码；先手动建库：CREATE DATABASE mini_mall DEFAULT CHARSET utf8mb4;
     url: jdbc:mysql://localhost:3306/mini_mall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update        # 自动建表，方便练习；生产环境绝不用

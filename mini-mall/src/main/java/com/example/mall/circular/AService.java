@@ -1,5 +1,8 @@
 package com.example.mall.circular;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 /**
  * ISSUE-006 实验类：循环依赖
  *
@@ -11,16 +14,23 @@ package com.example.mall.circular;
  *
  * 注意：完成实验后把注解去掉（或保持 setter 版本），否则项目无法启动。
  */
+@Service
 public class AService {
 
     private BService b;
 
     // TODO(实验第一步)：加 @Service + 构造方法注入 BService，复现报错
-    // public AService(BService b) { this.b = b; }
+//     public AService(BService b) { this.b = b; }
 
-    // TODO(实验第二步)：改成 setter 注入，验证三级缓存解决循环依赖
-    // @Autowired
-    // public void setB(BService b) { this.b = b; }
+    // setter 注入允许 A 先完成实例化，再通过三级缓存暴露早期引用
+    @Autowired
+    public void setB(BService b) {
+        this.b = b;
+    }
+
+    // 实例化 A 后，向三级缓存注册用于获取 A 早期引用的 ObjectFactory
+    // 填充属性时发现需要 B，于是开始创建 B
+    // B 初始化完成后进入一级缓存，再注入 A，最后完成 A 的初始化
 
     public String hello() {
         return "A 拿到了 B: " + (b != null);
