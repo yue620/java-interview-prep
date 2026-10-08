@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
     private static final int TOTAL = 100_000;
 
     private final ProductRepository productRepository;

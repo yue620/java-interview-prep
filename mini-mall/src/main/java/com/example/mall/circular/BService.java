@@ -15,10 +15,10 @@ public class BService {
 //     public BService(AService a) { this.a = a; }
 
     // setter 注入允许 B 先完成实例化，再接收 A 的早期引用
-    @Autowired
-    public void setA(AService a) {
-        this.a = a;
-    }
+//    @Autowired
+//    public void setA(AService a) {
+//        this.a = a;
+//    }
 
     // 创建 B 时填充属性，发现依赖 A
     // 从 A 的三级缓存 ObjectFactory 获取 A 的早期引用

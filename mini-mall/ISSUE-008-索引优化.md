@@ -13,11 +13,11 @@
    ```sql
    SELECT * FROM product WHERE name = '商品99999';
    ```
-2. `EXPLAIN` 这条 SQL，记录：`type=____`、`key=____`、`rows=____`
+2. `EXPLAIN` 这条 SQL，记录：`type=all`、`key=null`、`rows=120925`
 
 ### Part 2：加索引 + 对比
 3. `ALTER TABLE product ADD INDEX idx_name(name);`
-4. 再跑同样的查询和 EXPLAIN，记录：`type=____`、`key=____`、`rows=____`
+4. 再跑同样的查询和 EXPLAIN，记录：`type=ref`、`key=idx_name`、`rows=1`
 5. 计算：扫描行数从多少降到多少？
 
 ### Part 3：索引失效三连（每条都先 EXPLAIN 预测，再执行验证）
@@ -35,9 +35,9 @@
     ```
 
 ## 验收标准
-- [ ] Part 1/2 的 explain 前后对比记录（type 从 ALL 变 ref，rows 骤降）
-- [ ] Part 3 三个失效场景的 explain 记录
-- [ ] Part 4 能说出每条 SQL 用了联合索引的几列、为什么
+- [x] Part 1/2 的 explain 前后对比记录（type 从 ALL 变 ref，rows 骤降）
+- [x] Part 3 三个失效场景的 explain 记录
+- [x] Part 4 能说出每条 SQL 用了联合索引的几列、为什么
 
 ## 实验记录
 （在这里贴 explain 结果表格）

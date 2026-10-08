@@ -23,10 +23,10 @@ public class AService {
 //     public AService(BService b) { this.b = b; }
 
     // setter 注入允许 A 先完成实例化，再通过三级缓存暴露早期引用
-    @Autowired
-    public void setB(BService b) {
-        this.b = b;
-    }
+//    @Autowired
+//    public void setB(BService b) {
+//        this.b = b;
+//    }
 
     // 实例化 A 后，向三级缓存注册用于获取 A 早期引用的 ObjectFactory
     // 填充属性时发现需要 B，于是开始创建 B
