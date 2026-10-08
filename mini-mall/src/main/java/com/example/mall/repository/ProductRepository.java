@@ -18,4 +18,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Modifying
     @Query("UPDATE Product p SET p.stock = p.stock - 1 WHERE p.id = :id AND p.stock > 0")
     int deductStock(@Param("id") Long id);
+
+    /**
+     * ❌ 错误示范专用：盲扣库存（UPDATE stock=stock-1，不带任何条件）
+     * 配合 buyWrong 里"先读后写"的 Java 判断，复现库存被扣成负数的经典事故现场
+     * —— 对比上面 deductStock 的唯一区别就是少了 AND p.stock > 0
+     */
+    @Modifying
+    @Query("UPDATE Product p SET p.stock = p.stock - 1 WHERE p.id = :id")
+    int deductStockBlind(@Param("id") Long id);
 }

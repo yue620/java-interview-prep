@@ -22,16 +22,28 @@ public class OrderService {
     }
 
     /**
-     * ❌ 错误示范：读库存 → 判断 → 扣减，三步不是原子的
-     * 并发压测 /buy/wrong 接口，库存会变成负数
+     * ❌ 错误示范：读库存 → 判断 → 盲扣，三步不是原子的
+     * 并发压测 /buy/wrong 接口，库存会变成负数、成功人数远超库存
+     *
+     * 【2026-10-08 实测教训】最初的版本（读+save 绝对值写回）压测不出负数：
+     *   ① 读和写之间没有业务耗时，危险窗口只有几毫秒，请求实际排队执行了
+     *   ② JPA save 写的是算好的绝对值（最小 0），永远写不出负数
+     * 所以改成：sleep 100ms 模拟真实业务耗时（拉大窗口）+ 盲扣 SQL（不带 stock>0 条件）
      */
     @Transactional
     public String buyWrong(Long id) {
         Product p = productRepository.findById(id).orElseThrow();
         if (p.getStock() > 0) {
-            p.setStock(p.getStock() - 1);   // 两个线程都读到 1，都通过判断 → 超卖
-            productRepository.save(p);
-            return "购买成功，剩余库存: " + p.getStock();
+            // 模拟真实业务中"读到库存"和"扣库存"之间的耗时（算价格、查优惠券……）
+            // 正是这段耗时把危险窗口拉大，让并发线程都读到同一个旧库存
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            int remaining = p.getStock() - 1;
+            productRepository.deductStockBlind(id);   // 盲扣：UPDATE stock=stock-1，不看当前值
+            return "购买成功，剩余库存: " + remaining;
         }
         return "库存不足";
     }
