@@ -59,17 +59,28 @@ public class OrderService {
     }
 
     /**
-     * TODO(ISSUE-009) 修复方案②：乐观锁
-     * 步骤：
-     *   1. 给 Product.version 字段加上 @Version
-     *   2. 这里照抄 buyWrong 的"读-改-save"写法即可
-     *      —— 有 @Version 后，JPA 生成的 UPDATE 会自动带 version 校验，
-     *         并发冲突时抛 OptimisticLockException，库存不会变负
-     *   3. 压测验证：库存恰好扣到 0，不为负（部分请求抛异常=没抢到，属正常）
+     * ✅ 修复方案②：乐观锁（@Version）
+     *
+     * 【2026-10-08 实测教训】第一次实现照抄了 buyWrong 里的 deductStockBlind，
+     * 结果照样扣成负数 —— 因为 @Version 只对【实体 save()】生效：
+     * JPA 会把 UPDATE 自动改成 WHERE id=? AND version=?；
+     * 而 JPQL 的 @Modifying UPDATE 是你写什么执行什么，完全绕过乐观锁！
+     *
+     * 正确姿势：findById → setStock → save()，让 JPA 的脏检查 + @Version 接管。
+     * 并发冲突时失败方抛 OptimisticLockException（影响行数=0），库存不会变负。
+     *
+     * 注意：这里故意【不加】sleep —— 如果所有线程同时读到 version=0，
+     * 就只有 1 个人能提交成功（其余全部冲突失败），不利于演示"5 件库存卖完"。
+     * 这也说明乐观锁的弱点：高冲突时失败率高，需要重试机制配合。
      */
     @Transactional
     public String buyWithVersion(Long id) {
-        // TODO：参考 buyWrong，体会"代码几乎一样，但 @Version 在背后保护了你"
-        return "TODO";
+        Product p = productRepository.findById(id).orElseThrow();
+        if (p.getStock() > 0) {
+            p.setStock(p.getStock() - 1);
+            productRepository.save(p);   // ← 关键：实体 save，UPDATE 自动带 version 校验
+            return "购买成功";
+        }
+        return "库存不足";
     }
 }

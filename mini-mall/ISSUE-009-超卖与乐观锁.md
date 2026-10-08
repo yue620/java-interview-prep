@@ -18,7 +18,7 @@ for i in {1..50}; do curl -s -X POST http://localhost:8080/buy/wrong/1 & done; w
 
 ### Part 1：复现超卖
 1. 重置库存为 5 → 压 `/buy/wrong/1`
-2. 记录最终库存：____（预期：负数，超卖实锤）
+2. 记录最终库存：-5（预期：负数，超卖实锤）
 
 ### Part 2：原子 SQL 修复
 3. 重置库存为 5 → 压 `/buy/atomic/1`

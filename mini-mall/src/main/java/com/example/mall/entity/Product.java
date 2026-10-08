@@ -25,7 +25,7 @@ public class Product {
      * TODO(ISSUE-009)：加 @Version 注解 → JPA 自动实现乐观锁
      * 每次 update 自动执行 version = version + 1 并校验旧值
      */
-    // @Version
+     @Version
     private Integer version;
 
     // ---- getter/setter（保持简单，不用 lombok） ----
